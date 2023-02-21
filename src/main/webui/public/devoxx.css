@@ -1,0 +1,51 @@
+@font-face {
+  font-family: 'Inter';
+  src: url('fonts/Inter-Variable.ttf') format('truetype');
+  font-weight: 100 900;
+}
+
+@font-face {
+  font-family: 'Carter One';
+  src: url('fonts/CarterOne-Regular.ttf') format('truetype');
+}
+
+:root {
+  --color-1: #e93434;
+  --color-2: #000000;
+  --color-3: #FFFFFF;
+  --color-4: #55b1e1;
+  --color-5: #041D5C;
+
+  --font: Inter, sans-serif;
+  --font-weight: 300;
+  --font-size: small;
+
+  --card-width: 103px;
+  --card-height: 154px;
+  --card-scale-small: 0.45;
+  --card-scale: 0.60;
+
+  --card-clubs-color: #00892C;
+  --card-spades-color: #000;
+  --card-hearts-color: #B1081B;
+  --card-diamonds-color: #0D3082;
+
+  --background-table: #121212;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+@property --color-countdown {
+  syntax: "<color>";
+  inherits: false;
+  initial-value: green;
+}
+
+@property --percentage-countdown {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 100%;
+}
