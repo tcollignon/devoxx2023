@@ -15,6 +15,7 @@ import org.tcollignon.user.service.UserService;
 import javax.inject.Inject;
 
 import static io.restassured.RestAssured.given;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
 
 
@@ -206,5 +207,23 @@ public class UsersResourceTest {
             .post("/j_security_check")
             .then()
             .statusCode(200);
+    }
+
+    @Test
+    @TestSecurity(user = "hacker@gmail.com", roles = {"user"})
+    public void should_return_403_when_update_my_user_profile_with_other_person_than_me() {
+        User admin = userService.createUser(new User("admin", "admin@gmail.com", "pass", "", ""));
+        User hacker = userService.createUser(new User("hacker", "hacker@gmail.com", "pass", "", ""));
+
+        given()
+            .contentType("application/json")
+            .body(new CreateUserFront("theNewAdmin", "", "", "admin@gmail.com", "theNewPassword"))
+            .when().post("/users/myprofile")
+            .then()
+            .statusCode(403);
+
+        User u = userService.loadUser(admin.id);
+        assertThat(u.nickname).isEqualTo("admin");
+        assertThat(u.password).isEqualTo(admin.password);
     }
 }

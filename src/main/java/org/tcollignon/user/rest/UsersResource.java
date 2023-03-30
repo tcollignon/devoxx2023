@@ -79,6 +79,10 @@ public class UsersResource {
     @RolesAllowed({"admin", "user"})
     @Path("myprofile")
     public Response updateMyProfile(@Context SecurityContext securityContext, @Valid CreateUserFront createUserFront) {
+        User userAuth = User.findByEmail(securityContext.getUserPrincipal().getName());
+        if (!userAuth.email.equals(createUserFront.email)) {
+            return Response.status(403).build();
+        }
         User user = CreateUserFrontMapper.map(createUserFront);
         user = service.updateUser(user);
         UserFront userFront = UserFrontMapper.map(user);

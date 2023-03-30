@@ -101,3 +101,18 @@ _HOL : Hacker son application JAVA pour mieux la sécuriser ensuite_
 - Maintenant que vous avez trouvé une faille dans cette application, il est temps de la corriger ! C'est tout de même vous qui maintenez cette application !
 - _OPTIONNEL_ : Ajouter un logger de sécurité
 - Corrigez le problème
+
+### Solution
+
+- Il faut corriger le code, Cf UsersResource#updateMyProfile, il faut ajouter un test sur l'email au début de la méthode :
+
+```
+  User userAuth = User.findByEmail(securityContext.getUserPrincipal().getName());
+
+
+  if (!userAuth.email.equals(createUserFront.email)) {
+    return Response.status(403).build();
+  }
+```
+
+- Un test peut être mis en oeuvre pour cela, Cf UsersResourceTest#should_return_403_when_update_my_user_profile_with_other_person_than_me
