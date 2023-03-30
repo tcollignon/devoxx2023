@@ -244,6 +244,7 @@ export class Login extends LitElement {
         if (response.status === 200) {
             this.logged = true
             this._authentificationKO = false
+            this._message = ''
             const userLogin = new UserLoginPageData()
             if (this._rememberMe) {
                 userLogin.setEmail(login)
@@ -296,6 +297,7 @@ export class Login extends LitElement {
       const userData = new UserData()
       userData.remove()
       this.logged = false
+      this._message = ''
       document.cookie = 'quarkus-credential=; Max-Age=0'
       this.setImageHome()
       this.requestUpdate()

@@ -9,9 +9,9 @@ _HOL : Hacker son application JAVA pour mieux la sécuriser ensuite_
 
 # Cas 01 : Réinitialisation de mot de passe par envoi d'un lien
 
-- Rendez-vous sur la page principale de cette application Java (sous Firefox, car Chrome n'aime pas http non sécurisé) : http://localhost:8081 (si vous avez changé le port http ...)
+- Rendez-vous sur la page principale de cette application Java (sous Firefox, car Chrome n'aime pas http non sécurisé) : http://localhost:8081
 - Il existe un compte administrateur créé automatiquement, vous ne le connaissez pas, mais vous allez devoir tenter de le découvrir.
-- Si vous souhaitez créer un compte, vous utilisez le bouton associé, le compte est automatiquement créé (on n'envoie pas de mail de confirmation ici pour simplification, mais simplement un mail de bienvenu que vous trouverez dans la log console de l'application)
+- Vous allez maintenant créer un compte, via le bouton associé, le compte est automatiquement créé (on n'envoie pas de mail de confirmation ici pour simplification, mais simplement un mail de bienvenue que vous trouverez dans la log console de l'application)
 
 ## Description du cas fonctionnel
 
