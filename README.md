@@ -70,3 +70,20 @@ _HOL : Hacker son application JAVA pour mieux la sécuriser ensuite_
 ```
 
 - Puis ajout de ligne de log du style :  LOG.warn("Anormal action was made for user " + user.email);
+
+# Cas 02 : Modification de mot de passe dans sa page de profil
+
+- Rendez-vous sur la page principale de cette application, puis identifiez-vous avec votre compte personnel (on considère ici qu'on ne connait plus le mot de passe du compte admin, la faille a été corrigé :) )
+- Vous devriez ensuite avoir une page qui vous permet de modifier vos données personnelles : notamment pseudo et mot de passe
+- Faites un essai, vous pouvez normalement modifier ces 2 informations sans problème (le mot de passe doit être de 6 caractères minimum, et il est obligatoire de saisir une valeur pour valider le formulaire)
+
+## Description du cas fonctionnel
+
+- Vous constatez qu'il est possible de changer de mot de passe sans devoir saisir la valeur de l'ancien mot de passe.
+- Vous allez utiliser cette fonction pour tenter une nouvelle fois de modifier le mot de passe d'un autre compte
+
+## Phase d'attaque
+
+- Vous souhaitez prendre à nouveau le contrôle de l'administrateur de l'application, vous connaissez maintenant son email : admin@devoxx.com
+- Vous allez utiliser une faille du code pour modifier le mot de passe de l'administrateur
+- Vous allez enfin vous connecter en tant qu'administrateur
