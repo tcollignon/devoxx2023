@@ -216,7 +216,7 @@ public class UsersResource {
             return Response.status(401).build();
         }
         ReinitPasswordRequest reinitPasswordRequest = ReinitPasswordRequest.findById(requestUuid);
-        if (reinitPasswordRequest == null || !reinitPasswordRequest.getId().equals(requestUuid) || !reinitPasswordRequest.email.equalsIgnoreCase(email)) {
+        if (reinitPasswordRequest == null || !reinitPasswordRequest.getId().equals(requestUuid)) {
             return Response.status(401).build();
         }
         service.reinitPassword(user, newPassword);
