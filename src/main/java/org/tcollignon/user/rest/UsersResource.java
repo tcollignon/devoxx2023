@@ -1,6 +1,5 @@
 package org.tcollignon.user.rest;
 
-import org.apache.commons.text.StringSubstitutor;
 import org.jboss.logging.Logger;
 import org.tcollignon.user.front.CreateUserFront;
 import org.tcollignon.user.front.UserFront;
@@ -28,8 +27,6 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
 @Path("/users")
@@ -216,7 +213,7 @@ public class UsersResource {
             return Response.status(401).build();
         }
         ReinitPasswordRequest reinitPasswordRequest = ReinitPasswordRequest.findById(requestUuid);
-        if (reinitPasswordRequest == null || !reinitPasswordRequest.getId().equals(requestUuid) || !reinitPasswordRequest.email.equalsIgnoreCase(email)) {
+        if (reinitPasswordRequest == null || !reinitPasswordRequest.getId().equals(requestUuid)) {
             return Response.status(401).build();
         }
         service.reinitPassword(user, newPassword);

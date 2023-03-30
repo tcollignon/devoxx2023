@@ -193,8 +193,8 @@ public class UserService {
 
     @Transactional
     public void reinitPassword(User user, String newPassword) {
-        user.password = newPassword;
-        updateUser(user);
+        user.password = BcryptUtil.bcryptHash(newPassword);
+        User.persist(user);
     }
 
     @Transactional

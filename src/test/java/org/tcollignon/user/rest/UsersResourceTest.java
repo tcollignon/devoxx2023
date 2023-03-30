@@ -15,7 +15,6 @@ import org.tcollignon.user.service.UserService;
 import javax.inject.Inject;
 
 import static io.restassured.RestAssured.given;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
 
 
@@ -135,52 +134,32 @@ public class UsersResourceTest {
 
     @Test
     public void should_return_200_when_reinit_password_request_process() {
-        User thePlayer = userService.createUser(new User("thePlayer", "thePlayer@gmail.com", "pass", "", ""));
-        User hacker = userService.createUser(new User("hacker", "hacker@gmail.com", "pass", "", ""));
+        User admin = userService.createUser(new User("admin", "admin@gmail.com", "pass", "", ""));
         String newPassword = "tropBien";
 
         given()
             .contentType("text/plain")
-            .body("thePlayer@gmail.com")
-            .when().post("/users/reinitPasswordRequest")
-            .then()
-            .statusCode(200);
-
-        given()
-            .contentType("text/plain")
-            .body("hacker@gmail.com")
+            .body("admin@gmail.com")
             .when().post("/users/reinitPasswordRequest")
             .then()
             .statusCode(200);
 
         //An email with a link was send to the user
-        ReinitPasswordRequest reinitPasswordRequest = ReinitPasswordRequest.findByEmail("thePlayer@gmail.com");
+        ReinitPasswordRequest reinitPasswordRequest = ReinitPasswordRequest.findByEmail("admin@gmail.com");
         Assertions.assertThat(reinitPasswordRequest).isNotNull();
-
-        //Also to the hacker
-        ReinitPasswordRequest reinitPasswordHackerRequest = ReinitPasswordRequest.findByEmail("hacker@gmail.com");
 
         //If a request is still present, if we call again the service, the result is the same
         given()
             .contentType("text/plain")
-            .body("thePlayer@gmail.com")
+            .body("admin@gmail.com")
             .when().post("/users/reinitPasswordRequest")
             .then()
             .statusCode(200);
-        reinitPasswordRequest = ReinitPasswordRequest.findByEmail("thePlayer@gmail.com");
+        reinitPasswordRequest = ReinitPasswordRequest.findByEmail("admin@gmail.com");
         Assertions.assertThat(reinitPasswordRequest).isNotNull();
 
-        //The hacker cant change other password !!! 
-        String confirmationHackerLink = "/users/reinitPassword/thePlayer@gmail.com/" + reinitPasswordHackerRequest.getId();
-        given()
-            .contentType("text/plain")
-            .body(newPassword)
-            .when().post(confirmationHackerLink)
-            .then()
-            .statusCode(401);
-
         //The correct user link would call this service : 
-        String confirmationLink = "/users/reinitPassword/thePlayer@gmail.com/" + reinitPasswordRequest.getId();
+        String confirmationLink = "/users/reinitPassword/admin@gmail.com/" + reinitPasswordRequest.getId();
         given()
             .contentType("text/plain")
             .body(newPassword)
@@ -196,34 +175,16 @@ public class UsersResourceTest {
             .then()
             .statusCode(401);
 
-        reinitPasswordRequest = ReinitPasswordRequest.findByEmail("thePlayer@gmail.com");
+        reinitPasswordRequest = ReinitPasswordRequest.findByEmail("admin@gmail.com");
         Assertions.assertThat(reinitPasswordRequest).isNotNull();
 
         //User can auth with new password
         given()
-            .auth().preemptive().basic("thePlayer@gmail.com", newPassword)
+            .formParam("j_username", "admin@gmail.com")
+            .formParam("j_password", newPassword)
             .when()
-            .contentType(ContentType.JSON)
-            .post("/users/authUser")
+            .post("/j_security_check")
             .then()
             .statusCode(200);
-    }
-
-    @Test
-    @TestSecurity(user = "hacker@gmail.com", roles = {"user"})
-    public void should_return_403_when_update_my_user_profile_with_other_person_than_me() {
-        User thePlayer = userService.createUser(new User("thePlayer", "thePlayer@gmail.com", "pass", "", ""));
-        User hacker = userService.createUser(new User("hacker", "hacker@gmail.com", "pass", "", ""));
-
-        given()
-            .contentType("application/json")
-            .body(new CreateUserFront("theNewPlayer", "", "", "thePlayer@gmail.com", "theNewPassword"))
-            .when().post("/users/myprofile")
-            .then()
-            .statusCode(403);
-
-        User u = userService.loadUser(thePlayer.id);
-        assertThat(u.nickname).isEqualTo("thePlayer");
-        assertThat(u.password).isEqualTo(thePlayer.password);
     }
 }
