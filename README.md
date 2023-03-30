@@ -27,3 +27,23 @@ _HOL : Hacker son application JAVA pour mieux la sécuriser ensuite_
 - Puis vous allez utiliser la fonction d'oubli de mot de passe pour réinitialiser le mot de passe de l'administrateur avec un mot de passe de votre choix
     - Attention vous devez vous placer dans la peau d'un attaquant donc considérer que vous n'avez pas accès à la log console du serveur
 - Vous allez enfin vous connecter en tant qu'administrateur
+
+### Solution
+
+- Vous créez un compte d'attaque avec un mail qui existe (car il faut pouvoir recevoir le mail avec le lien)
+- Vous constatez que le mail de bienvenu provient de info@devoxx.com. Vous cherchez donc un autre compte qui pourrait être admin
+    - Quand vous vous inscrivez, vous constatez que si vous vous inscrivez 2 fois, il vous dit que le mail est deja pris, cela va vous permettre de tester les comptes pour trouver l'admin => admin@devoxx.com
+- Vous utilisez la fonction d'oubli de mot pour votre compte d'attaque => vous récupérez le lien correspondant
+- Vous modifiez le lien en mettant l'adresse email de l'administrateur puis vous allez sur le lien
+    - Attention vous devez effectuer la manipulation de modification du lien rapidement, car les demandes de changements de mots de passes expirent toutes les 5 minutes (Cf UserScheduleService#deleteReinitPasswordRequest)
+- Vous remplissez le mot de passe que vous voulez, puis vous lancez la réinitialisation
+- Vous pouvez ensuite vous connecter en tant qu'administrateur
+
+## Phase de défense
+
+- Maintenant que vous avez trouvé une faille dans cette application, il est temps de la corriger ! C'est tout de même vous qui maintenez cette application !
+- _OPTIONNEL_ : Mettez en évidence le problème par un nouveau ou une modification de test unitaire/intégration
+- _OPTIONNEL_ : Ajouter un logger de sécurité qui met en évidence :
+    - Une action sensible (légitime) => [SECURITY OK]
+    - Une action malveillante => [SECURITY WARN]
+- Corrigez le problème
