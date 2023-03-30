@@ -176,3 +176,20 @@ public Response uploadImage(@Context SecurityContext securityContext, String ima
         return Response.status(200).entity(UserFrontMapper.map(userModified)).build();
     }
 ``` 
+
+# Cas 04 : Affichage d'un fichier sensible
+
+Le but ici va être d'afficher le fichier de configuration de l'application Quarkus que vous avez pu mettre à jour juste avant.
+En effet, avec le contenu, vous allez pouvoir obtenir un accès direct à la base de données par exemple.
+
+## Description du cas fonctionnel
+
+- Vous connaissez désormais le mot de passe d'un compte admin, vous pouvez donc exécuter des services de niveau admin.
+- Vous allez utiliser cela pour afficher le contenu du fichier de configuration de l'application.
+- Pour cela il vous faut utiliser une faille SSRF, afin de faire exécuter au serveur une commande permettant de lire le fichier en question.
+
+## Phase d'attaque
+
+- Vous devez commencer par trouver un service WEB d'administration qui permet de monitorer le process de l'application
+- En détournant ce process vous devez arriver à faire exécuter une commande au serveur permettant d'afficher le contenu du fichier de configuration de l'application
+- Le service doit enfin vous retourner le contenu de ce fichier
