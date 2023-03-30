@@ -208,3 +208,12 @@ En effet, avec le contenu, vous allez pouvoir obtenir un accès direct à la bas
 ## Phase de défense
 
 - Maintenant que vous avez trouvé une faille dans cette application, il est temps de la corriger ! C'est tout de même vous qui maintenez cette application !
+
+### Solution
+
+- Le code qui pose problème se trouve dans AdminResource
+- En effet, on peut constater plusieurs sources de failles de sécurité :
+    - Utiliser /admin comme nommage d'API de service d'administration n 'est pas une bonne idée, car les robots et les hackers vont toujours chercher cela, privilégiez quelque chose de fonctionnel comme /adminAndMonitorDevoxxUsersApplication
+    - On lance une commande système via un webservice, pas une super idée !
+    - Mais en plus cette commande n'est pas fixe, elle peut être surchargée via un paramètre du service en question : encore moins une bonne idée !
+    - Dernier point : ce genre de service d'administration très poussé ne devrait pas être accessible par les utilisateurs (blocage au niveau réseau)
