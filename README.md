@@ -47,3 +47,26 @@ _HOL : Hacker son application JAVA pour mieux la sécuriser ensuite_
     - Une action sensible (légitime) => [SECURITY OK]
     - Une action malveillante => [SECURITY WARN]
 - Corrigez le problème
+
+
+### Solution
+
+- Nous pouvons modifier le test UsersResourceTest#should_return_200_when_reinit_password_request_process pour ajouter le comportement de l'attaquant, et ainsi vérifier que cette attaque est actuellement possible => le test doit être en erreur
+- Il faut ensuite corriger le code, Cf UsersResource#reinitPassword, la ligne devient :
+-
+```
+  if (reinitPasswordRequest == null || !reinitPasswordRequest.getId().equals(requestUuid) || !reinitPasswordRequest.email.equalsIgnoreCase(email)) {
+```
+
+- Et là le test passe au vert
+    - Autre solution, on ne passe plus le paramètre email dans la requête, et on le récupère directement du ReinitPasswordRequest
+- Pour les logs on peut ajouter un handler de security par exemple dans le fichier configuration.properties
+
+```  
+  #log
+
+  quarkus.log.handler.console."SECURITY_LOGGING".format=%d{yyyy-MM-dd HH:mm:ss,SSS} SECURITY %-5p [%c{3.}] (%t) %s%e%n
+  quarkus.log.category."org.tcollignon.user.service.UserService".handlers=SECURITY_LOGGING
+```
+
+- Puis ajout de ligne de log du style :  LOG.warn("Anormal action was made for user " + user.email);
