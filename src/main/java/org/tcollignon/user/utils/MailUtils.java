@@ -83,7 +83,7 @@ public class MailUtils {
 
     public static String getRegisterMailHtml(String nickname) {
         String html = "<html>" +
-            "<body> Bienvenu &agrave; Devoxx " + nickname +
+            "<body> Bienvenue &agrave; Devoxx " + nickname +
             "</body>" +
             "</html>";
         return html;
