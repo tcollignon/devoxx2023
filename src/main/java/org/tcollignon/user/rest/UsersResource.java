@@ -102,26 +102,19 @@ public class UsersResource {
     }
 
     @POST
-    @Path("uploadImage/{name}")
+    @Path("uploadImage")
     @Consumes(MediaType.TEXT_PLAIN)
-    public Response uploadImage(@Context SecurityContext securityContext, String image, @PathParam("name") String imageName) throws IOException {
+    public Response uploadImage(@Context SecurityContext securityContext, String image) throws IOException {
         User userAuth = User.findByEmail(securityContext.getUserPrincipal().getName());
-
-        //First we store file in tmp dir
+        //Write file in public image folder
         byte[] decodedBytes = Base64.getDecoder().decode(image.split(BASE_64_COMMA)[1]);
-        if (!Files.exists(Paths.get("tmp"))) {
-            Files.createDirectory(Paths.get("tmp"));
-        }
-        Files.write(Paths.get("tmp/" + imageName), decodedBytes);
-
-        //And then we move in img public folder
         String mimeType = image.split(BASE_64_COMMA)[0].replace(DATA, "");
         String extension = mimeType.split("/")[1];
         String imgPublicDir = "src/main/webui/public/img/profil";
         String imageFinalName = userAuth.nickname + "_" + System.currentTimeMillis() + "." + extension;
-        Files.move(Paths.get("tmp/" + imageName), Paths.get(imgPublicDir + "/" + imageFinalName));
+        Files.write(Paths.get(imgPublicDir + "/" + imageFinalName), decodedBytes);
 
-        //Last, we update user
+        //Then, we update user
         User userModified = service.updateProfilImage(userAuth, imageFinalName);
 
         return Response.status(200).entity(UserFrontMapper.map(userModified)).build();

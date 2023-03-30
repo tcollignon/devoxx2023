@@ -145,3 +145,34 @@ On va s'intéresser ici à la fonctionnalité qui permet d'ajouter/modifier une 
 - Maintenant que vous avez trouvé une faille dans cette application, il est temps de la corriger ! C'est tout de même vous qui maintenez cette application !
 - _OPTIONNEL_ : Ajouter un logger de sécurité
 - Corrigez le problème
+
+### Solution
+
+- Afficher une indication sur la technologie du backend n'est pas une bonne idée, il ne faut laisser aucune informations sensibles visibles
+- Le code qui pose problème se trouve dans UsersResources#uploadImage
+- En effet, on peut constater plusieurs sources de failles de sécurité :
+    - On passe le nom du fichier en paramètre du service : ce nom ne sert à rien au code backend, il ne faut pas le passer pour éviter justement une faille à cause de lui
+    - On ne contrôle pas coté backend le type de fichier, ici c'est une image il faut se restreindre à cela, et jeter tout le reste
+    - On fait une copie du fichier dans le répertoire de l'application, c'est très dangereux, il faut considérer ce repertoire comme readonly depuis l'extérieur. Il faut écrire le fichier dans un espace tmp du serveur, ou bien directement sur le repertoire image publique cible
+- Une proposition de code est donc :
+
+``` 
+@POST
+@Path("uploadImage")
+@Consumes(MediaType.TEXT_PLAIN)
+public Response uploadImage(@Context SecurityContext securityContext, String image) throws IOException {
+        User userAuth = User.findByEmail(securityContext.getUserPrincipal().getName());
+        //Write file in public image folder
+        byte[] decodedBytes = Base64.getDecoder().decode(image.split(BASE_64_COMMA)[1]);
+        String mimeType = image.split(BASE_64_COMMA)[0].replace(DATA, "");
+        String extension = mimeType.split("/")[1];
+        String imgPublicDir = "src/main/webui/public/img/profil";
+        String imageFinalName = userAuth.nickname + "_" + System.currentTimeMillis() + "." + extension;
+        Files.write(Paths.get(imgPublicDir + "/" + imageFinalName), decodedBytes);
+
+        //Then, we update user
+        User userModified = service.updateProfilImage(userAuth, imageFinalName);
+
+        return Response.status(200).entity(UserFrontMapper.map(userModified)).build();
+    }
+``` 
