@@ -87,3 +87,17 @@ _HOL : Hacker son application JAVA pour mieux la sécuriser ensuite_
 - Vous souhaitez prendre à nouveau le contrôle de l'administrateur de l'application, vous connaissez maintenant son email : admin@devoxx.com
 - Vous allez utiliser une faille du code pour modifier le mot de passe de l'administrateur
 - Vous allez enfin vous connecter en tant qu'administrateur
+
+### Solution
+
+- Vous créez un compte d'attaque (ou bien vous utilisez celui que vous avez créé à l'exercice 1)
+- Vous vous logguez
+- Vous lancez la modification de votre mot de passe afin de voir quelle requête est lancée
+- Vous utilisez le cookie via une faille csrf pour changer le mot de passe de l'admin
+- Vous pouvez ensuite vous connecter en tant qu'administrateur
+
+## Phase de défense
+
+- Maintenant que vous avez trouvé une faille dans cette application, il est temps de la corriger ! C'est tout de même vous qui maintenez cette application !
+- _OPTIONNEL_ : Ajouter un logger de sécurité
+- Corrigez le problème
