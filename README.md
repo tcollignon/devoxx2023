@@ -193,3 +193,18 @@ En effet, avec le contenu, vous allez pouvoir obtenir un accès direct à la bas
 - Vous devez commencer par trouver un service WEB d'administration qui permet de monitorer le process de l'application
 - En détournant ce process vous devez arriver à faire exécuter une commande au serveur permettant d'afficher le contenu du fichier de configuration de l'application
 - Le service doit enfin vous retourner le contenu de ce fichier
+
+### Solution
+
+- Vous vous connectez en tant que admin@devoxx.com
+- Vous testez la fameuse URL "/admin" et vous vous rendez compte quelle renvoi une trace du process serveur
+- Vous vous rendez compte dans cette trace, qu'au tout début on liste la commande qui est exécutée par le serveur
+- Vous tentez donc de modifier cette commande, en passant le query param command au service : http://localhost:8081/admin?command=whoami
+- Il faut donc ensuite que vous passiez la bonne commande pour trouver le fichier de configuration, vous devez donc savoir dans quel dossier vous êtes actuellement : http://localhost:8081/admin?command=cd
+    - Vous constatez que vous vous trouvez vraisemblablement dans le dossier courant du serveur
+    - Vous exécutez donc la commande permettant d'afficher le fichier de configuration dans son répertoire classique (en n'oubliant pas les url encode) : http://localhost:8081/admin?command=type%20src%5Cmain%5Cresources%5Capplication.properties
+    - et vous récupérez le contenu du fameux fichier !
+
+## Phase de défense
+
+- Maintenant que vous avez trouvé une faille dans cette application, il est temps de la corriger ! C'est tout de même vous qui maintenez cette application !
