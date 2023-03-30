@@ -49,7 +49,6 @@ _HOL : Hacker son application JAVA pour mieux la sécuriser ensuite_
     - Une action malveillante => [SECURITY WARN]
 - Corrigez le problème
 
-
 ### Solution
 
 - Nous pouvons modifier le test UsersResourceTest#should_return_200_when_reinit_password_request_process pour ajouter le comportement de l'attaquant, et ainsi vérifier que cette attaque est actuellement possible => le test doit être en erreur
@@ -60,7 +59,7 @@ _HOL : Hacker son application JAVA pour mieux la sécuriser ensuite_
 ```
 
 - Et là le test passe au vert
-    - Autre solution, on ne passe plus le paramètre email dans la requête, et on le récupère directement du ReinitPasswordRequest
+  - Autre solution, on ne passe plus le paramètre email dans la requête, et on le récupère directement du ReinitPasswordRequest
 - Pour les logs on peut ajouter un handler de security par exemple dans le fichier configuration.properties
 
 ```  

@@ -135,6 +135,7 @@ public class UsersResourceTest {
     @Test
     public void should_return_200_when_reinit_password_request_process() {
         User admin = userService.createUser(new User("admin", "admin@gmail.com", "pass", "", ""));
+        User hacker = userService.createUser(new User("hacker", "hacker@gmail.com", "pass", "", ""));
         String newPassword = "tropBien";
 
         given()
@@ -144,9 +145,19 @@ public class UsersResourceTest {
             .then()
             .statusCode(200);
 
+        given()
+            .contentType("text/plain")
+            .body("hacker@gmail.com")
+            .when().post("/users/reinitPasswordRequest")
+            .then()
+            .statusCode(200);
+
         //An email with a link was send to the user
         ReinitPasswordRequest reinitPasswordRequest = ReinitPasswordRequest.findByEmail("admin@gmail.com");
         Assertions.assertThat(reinitPasswordRequest).isNotNull();
+
+        //Also to the hacker
+        ReinitPasswordRequest reinitPasswordHackerRequest = ReinitPasswordRequest.findByEmail("hacker@gmail.com");
 
         //If a request is still present, if we call again the service, the result is the same
         given()
@@ -157,6 +168,15 @@ public class UsersResourceTest {
             .statusCode(200);
         reinitPasswordRequest = ReinitPasswordRequest.findByEmail("admin@gmail.com");
         Assertions.assertThat(reinitPasswordRequest).isNotNull();
+
+        //The hacker cant change other password !!! 
+        String confirmationHackerLink = "/users/reinitPassword/admin@gmail.com/" + reinitPasswordHackerRequest.getId();
+        given()
+            .contentType("text/plain")
+            .body(newPassword)
+            .when().post(confirmationHackerLink)
+            .then()
+            .statusCode(401);
 
         //The correct user link would call this service : 
         String confirmationLink = "/users/reinitPassword/admin@gmail.com/" + reinitPasswordRequest.getId();
