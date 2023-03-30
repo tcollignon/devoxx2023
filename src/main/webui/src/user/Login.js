@@ -438,7 +438,7 @@ export class Login extends LitElement {
       if (this.logged) {
           const userData = new UserData()
           return html`
-              <span class="titre">Bienvenu à Devoxx <b>${userData.getNickname()}</b></span>
+              <span class="titre">Bienvenue à Devoxx <b>${userData.getNickname()}</b></span>
               <span class="titre">Votre description est <b>${userData.getInterpolateDescription()}</b></span>
               <div class="boutons">
                   <button @click="${this.deconnecte}">Me dé-connecter</button>
