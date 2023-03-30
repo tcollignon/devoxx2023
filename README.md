@@ -42,7 +42,8 @@ _HOL : Hacker son application JAVA pour mieux la sécuriser ensuite_
 ## Phase de défense
 
 - Maintenant que vous avez trouvé une faille dans cette application, il est temps de la corriger ! C'est tout de même vous qui maintenez cette application !
-- _OPTIONNEL_ : Mettez en évidence le problème par un nouveau ou une modification de test unitaire/intégration
+- Les services REST de gestion des utilisateurs se trouvent dans la classe UsersResource, les process dans la classe UserService
+- _OPTIONNEL_ : Mettez en évidence le problème par un nouveau test ou une modification du test UsersResourceTest#should_return_200_when_reinit_password_request_process
 - _OPTIONNEL_ : Ajouter un logger de sécurité qui met en évidence :
     - Une action sensible (légitime) => [SECURITY OK]
     - Une action malveillante => [SECURITY WARN]
