@@ -79,7 +79,7 @@ quarkus.hibernate-orm.database.generation=update
 
 # Cas 02 : Modification de mot de passe dans sa page de profil
 
-- Rendez-vous sur la page principale de cette application, puis identifiez-vous avec votre compte personnel (on considère ici qu'on ne connait plus le mot de passe du compte admin, la faille a été corrigé :) )
+- Rendez-vous sur la page principale de cette application, puis identifiez-vous avec votre compte personnel (on considère ici qu'on ne connait plus le mot de passe du compte admin, la faille a été corrigée :) )
 - Vous devriez ensuite avoir une page qui vous permet de modifier vos données personnelles : notamment pseudo et mot de passe
 - Faites un essai, vous pouvez normalement modifier ces 2 informations sans problème (le mot de passe doit être de 6 caractères minimum, et il est obligatoire de saisir une valeur pour valider le formulaire)
 
