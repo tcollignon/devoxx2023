@@ -10,6 +10,7 @@ import org.tcollignon.user.mapper.UserFrontMapper;
 import org.tcollignon.user.object.ReinitPasswordRequest;
 import org.tcollignon.user.object.User;
 import org.tcollignon.user.service.UserService;
+import org.tcollignon.user.service.UserServiceSecurityLogger;
 
 import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
@@ -40,6 +41,9 @@ public class UsersResource {
 
     @Inject
     UserService service;
+    
+    @Inject
+    UserServiceSecurityLogger userServiceSecurityLogger;
 
     @GET
     @Produces("application/json")
@@ -210,7 +214,11 @@ public class UsersResource {
             return Response.status(401).build();
         }
         ReinitPasswordRequest reinitPasswordRequest = ReinitPasswordRequest.findById(requestUuid);
-        if (reinitPasswordRequest == null || !reinitPasswordRequest.getId().equals(requestUuid) || !reinitPasswordRequest.email.equalsIgnoreCase(email)) {
+        if (reinitPasswordRequest == null || !reinitPasswordRequest.getId().equals(requestUuid)) {
+            return Response.status(401).build();
+        }
+        if (!reinitPasswordRequest.email.equalsIgnoreCase(email)) {
+            userServiceSecurityLogger.logAbnormalReinitPassword(user);
             return Response.status(401).build();
         }
         service.reinitPassword(user, newPassword);

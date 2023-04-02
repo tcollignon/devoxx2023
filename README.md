@@ -66,13 +66,13 @@ quarkus.hibernate-orm.database.generation=update
 
 - Et là le test passe au vert
   - Autre solution, on ne passe plus le paramètre email dans la requête, et on le récupère directement du ReinitPasswordRequest
-- Pour les logs on peut ajouter un handler de security par exemple dans le fichier configuration.properties
+- Pour les logs on peut ajouter un handler de security par exemple dans le fichier configuration.properties, avec une classe de log dédiée UserServiceSecurityLogger
 
 ```  
   #log
 
   quarkus.log.handler.console."SECURITY_LOGGING".format=%d{yyyy-MM-dd HH:mm:ss,SSS} SECURITY %-5p [%c{3.}] (%t) %s%e%n
-  quarkus.log.category."org.tcollignon.user.service.UserService".handlers=SECURITY_LOGGING
+  quarkus.log.category."org.tcollignon.user.service.UserServiceSecurityLogger".handlers=SECURITY_LOGGING
 ```
 
 - Puis ajout de ligne de log du style :  LOG.warn("Anormal action was made for user " + user.email);
