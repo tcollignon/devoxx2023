@@ -42,6 +42,9 @@ public class UserService {
     @Inject
     ReactiveMailer reactiveMailer;
 
+    @Inject
+    UserServiceSecurityLogger userServiceSecurityLogger;
+
     private static final Logger LOG = Logger.getLogger(UserService.class);
 
     @Transactional
@@ -194,6 +197,7 @@ public class UserService {
     @Transactional
     public void reinitPassword(User user, String newPassword) {
         user.password = BcryptUtil.bcryptHash(newPassword);
+        userServiceSecurityLogger.logReinitPassword(user);
         User.persist(user);
     }
 
