@@ -6,6 +6,12 @@ _HOL : Hacker son application JAVA pour mieux la sécuriser ensuite_
 - Avoir Maven installé sur votre machine : https://maven.apache.org/download.cgi, puis https://maven.apache.org/install.html
 - Importer le projet JAVA dans votre IDE préféré
 - Lancer Quarkus : https://quarkus.io/guides/getting-started#running-the-application
+- Puis mettez-vous directement en mode Hibernate "update", en décommentant la ligne 19 du fichier de configuration src/main/resources/application.properties et en commentant la ligne 18
+
+````
+#quarkus.hibernate-orm.database.generation=drop-and-create
+quarkus.hibernate-orm.database.generation=update
+````
 
 # Cas 01 : Réinitialisation de mot de passe par envoi d'un lien
 
