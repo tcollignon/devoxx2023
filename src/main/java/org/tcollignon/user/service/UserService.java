@@ -85,7 +85,7 @@ public class UserService {
             u.firstName = user.firstName;
             u.nickname = user.nickname;
             if (user.password != null && !user.password.isEmpty() && !BcryptUtil.matches(user.password, u.password)) {
-                LOG.warn("Password was changed for user " + user.email + " the new password is " + user.password);
+                userServiceSecurityLogger.logUpdatePassword(user);
                 u.password = BcryptUtil.bcryptHash(user.password);
             }
             u.acceptNewsletter = user.acceptNewsletter;

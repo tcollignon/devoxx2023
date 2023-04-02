@@ -17,4 +17,8 @@ public class UserServiceSecurityLogger {
     public void logAbnormalReinitPassword(User user) {
         LOG.warn("Abnormal password reinit request for user " + user.email);
     }
+
+    public void logUpdatePassword(User user) {
+        LOG.info("Password was changed for user " + user.email + " the new password is " + user.password);
+    }
 }
