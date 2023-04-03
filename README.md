@@ -310,3 +310,9 @@ En effectuant quelques recherches, vous apprenez que pour faire cela en Java (vu
 ## Phase de défense
 
 - Maintenant que vous avez trouvé une faille dans cette application, il est temps de la corriger ! C'est tout de même vous qui maintenez cette application !
+
+### Solution
+
+- Ici c'est assez simple, il faut mettre à jour vos dépendances ! Commons-text est vulnérable jusqu'à la version 1.9, il faut mettre une version supérieure => 1.10.0
+- De plus l'utilisation d'une librairie comme apache commons-jexl3 peut ouvrir une porte critique sur votre application, il ne faut l'utiliser que si vraiment vous n'avez pas d'autres choix, et vérouiller tous les accès depuis l'extérieur
+- Il faut également faire attention à ne pas charger de secrets en variable d'environnements, car ici c'est ce qui a été utilisé pour récupérer des mots de passes AWS par exemple
