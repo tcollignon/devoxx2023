@@ -1,5 +1,8 @@
 package org.tcollignon.user.rest;
 
+import io.quarkus.panache.common.Sort;
+import io.quarkus.qute.Template;
+import io.quarkus.qute.TemplateInstance;
 import org.jboss.logging.Logger;
 import org.tcollignon.user.front.CreateUserFront;
 import org.tcollignon.user.front.UserFront;
@@ -45,6 +48,9 @@ public class UsersResource {
     @Inject
     UserServiceSecurityLogger userServiceSecurityLogger;
 
+    @Inject
+    Template users;
+
     @GET
     @Produces("application/json")
     @RolesAllowed({"admin", "config"})
@@ -84,10 +90,12 @@ public class UsersResource {
     @Path("myprofile")
     public Response updateMyProfile(@Context SecurityContext securityContext, @Valid CreateUserFront createUserFront) {
         User userAuth = User.findByEmail(securityContext.getUserPrincipal().getName());
-        if (!userAuth.email.equals(createUserFront.email)) {
+        User user = CreateUserFrontMapper.map(createUserFront);
+        
+        if (!userAuth.email.equals(user.email)) {
             return Response.status(403).build();
         }
-        User user = CreateUserFrontMapper.map(createUserFront);
+       
         user = service.updateUser(user);
         UserFront userFront = UserFrontMapper.map(user);
 
@@ -106,19 +114,26 @@ public class UsersResource {
     }
 
     @POST
-    @Path("uploadImage")
+    @Path("uploadImage/{name}")
     @Consumes(MediaType.TEXT_PLAIN)
-    public Response uploadImage(@Context SecurityContext securityContext, String image) throws IOException {
+    public Response uploadImage(@Context SecurityContext securityContext, String image, @PathParam("name") String imageName) throws IOException {
         User userAuth = User.findByEmail(securityContext.getUserPrincipal().getName());
-        //Write file in public image folder
+
+        //First we store file in tmp dir
         byte[] decodedBytes = Base64.getDecoder().decode(image.split(BASE_64_COMMA)[1]);
+        if (!Files.exists(Paths.get("tmp"))) {
+            Files.createDirectory(Paths.get("tmp"));
+        }
+        Files.write(Paths.get("tmp/" + imageName), decodedBytes);
+
+        //And then we move in img public folder
         String mimeType = image.split(BASE_64_COMMA)[0].replace(DATA, "");
         String extension = mimeType.split("/")[1];
         String imgPublicDir = "src/main/webui/public/img/profil";
         String imageFinalName = userAuth.nickname + "_" + System.currentTimeMillis() + "." + extension;
-        Files.write(Paths.get(imgPublicDir + "/" + imageFinalName), decodedBytes);
+        Files.move(Paths.get("tmp/" + imageName), Paths.get(imgPublicDir + "/" + imageFinalName));
 
-        //Then, we update user
+        //Last, we update user
         User userModified = service.updateProfilImage(userAuth, imageFinalName);
 
         return Response.status(200).entity(UserFrontMapper.map(userModified)).build();
@@ -235,5 +250,14 @@ public class UsersResource {
         User user = CreateUserFrontMapper.map(createUserFront);
         service.registerUser(user);
         return Response.status(201).build();
+    }
+    
+    @GET
+    @Produces(MediaType.TEXT_HTML)
+    @Consumes(MediaType.TEXT_HTML)
+    @Path("listUsers")
+    @RolesAllowed({"admin", "config"})
+    public TemplateInstance usersTemplate() {
+        return users.data("users", User.findAll().list());
     }
 }
