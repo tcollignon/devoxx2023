@@ -15,6 +15,8 @@ import java.io.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Path("/admin")
 @Produces(MediaType.APPLICATION_JSON)
@@ -37,6 +39,11 @@ public class AdminResource {
     @RolesAllowed({"admin"})
     @Path("/procPerf")
     public Response executePerfCounter(@Context SecurityContext securityContext, @QueryParam("pid") String pid) throws IOException, ExecutionException, InterruptedException, TimeoutException {
+        Pattern pattern = Pattern.compile("^[0-9]\\d*$");
+        Matcher matcher = pattern.matcher(pid);
+        if (!matcher.matches()) {
+            return Response.status(403).build();
+        }
         String finalCommand = "jcmd " + pid + " PerfCounter.print";
         AtomicReference<String> result = runCommand(finalCommand);
         return Response.status(200).entity(result.get()).build();
