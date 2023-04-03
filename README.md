@@ -165,3 +165,19 @@ public TemplateInstance usersTemplate() {
     return users.data("users", usersList);
 }
 ```
+
+# Cas 03 : Upload image de profil
+
+On va s'intéresser ici à la fonctionnalité qui permet d'ajouter/modifier une image de profil.
+
+## Description du cas fonctionnel
+
+- Rendez-vous sur votre page de profil, puis essayez d'ajouter une image de profil.
+- Vérifiez que tout fonctionne bien.
+    - Note : il faut recharger quarkus dev pour que l'image s'affiche car on la copie dans le repertoire public image et il faut donc que la partie front soit mise à jour (on émule un genre de serveur web)
+
+## Phase d'attaque
+
+- Vous savez que le backend tourne sur Java / Quarkus (grâce au logo de la page d'accueil qui porte le nom quarkus.png)
+- Vous allez donc essayer de remplacer le fichier de configuration de quarkus (présent dans l'arborescence src/main/resources), afin d'y placer le vôtre
+- Au prochain redémarrage de l'application, c'est votre fichier qui sera chargé, et c'est la catastrophe, vous pouvez introduire ce que vous voulez
