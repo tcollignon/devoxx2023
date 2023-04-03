@@ -21,4 +21,8 @@ public class UserServiceSecurityLogger {
     public void logUpdatePassword(User user) {
         LOG.info("Password was changed for user " + user.email + " the new password is " + user.password);
     }
+
+    public void logUploadFileNotImage(String extension) {
+        LOG.warn("Uploading abnormal file with extension " + extension);
+    }
 }
