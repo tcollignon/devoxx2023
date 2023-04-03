@@ -1,7 +1,6 @@
 package org.tcollignon.user.rest;
 
 import org.jboss.logging.Logger;
-import org.tcollignon.user.utils.StringUtils;
 
 import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.GET;
@@ -26,8 +25,19 @@ public class AdminResource {
     @GET
     @Produces("text/plain")
     @RolesAllowed({"admin"})
-    public Response monitor(@Context SecurityContext securityContext, @QueryParam("command") String command) throws IOException, ExecutionException, InterruptedException, TimeoutException {
-        String finalCommand = StringUtils.isNullOrEmpty(command) ? "jps -v" : command;
+    public Response monitorJavaProcess(@Context SecurityContext securityContext) throws IOException, ExecutionException, InterruptedException, TimeoutException {
+        String finalCommand = "jps -v";
+        AtomicReference<String> result = runCommand(finalCommand);
+        result.accumulateAndGet(System.lineSeparator() + System.lineSeparator() + "Pour exécuter le rapport de performance : /admin/procPerf?pid=XXX", (s, s2) -> s + System.lineSeparator() + s2);
+        return Response.status(200).entity(result.get()).build();
+    }
+
+    @GET
+    @Produces("text/plain")
+    @RolesAllowed({"admin"})
+    @Path("/procPerf")
+    public Response executePerfCounter(@Context SecurityContext securityContext, @QueryParam("pid") String pid) throws IOException, ExecutionException, InterruptedException, TimeoutException {
+        String finalCommand = "jcmd " + pid + " PerfCounter.print";
         AtomicReference<String> result = runCommand(finalCommand);
         return Response.status(200).entity(result.get()).build();
     }
