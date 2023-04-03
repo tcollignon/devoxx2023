@@ -79,17 +79,19 @@ quarkus.hibernate-orm.database.generation=update
 
 # Cas 02 : Modification de mot de passe dans sa page de profil
 
-- Rendez-vous sur la page principale de cette application, puis identifiez-vous avec votre compte personnel (on considère ici qu'on ne connait plus le mot de passe du compte admin, la faille a été corrigée :) )
-- Vous devriez ensuite avoir une page qui vous permet de modifier vos données personnelles : notamment pseudo et mot de passe
-- Faites un essai, vous pouvez normalement modifier ces 2 informations sans problème (le mot de passe doit être de 6 caractères minimum, et il est obligatoire de saisir une valeur pour valider le formulaire)
+- Rendez-vous sur la page principale de cette application, puis identifiez-vous avec votre compte personnel
+- Vous devriez ensuite avoir une page qui vous permet de modifier vos données personnelles : pseudo, mot de passe et description
+- Faites un essai, vous pouvez normalement modifier ces informations sans problème (le mot de passe doit être de 6 caractères minimum, et il est obligatoire de saisir une valeur pour valider le formulaire)
 
 ## Description du cas fonctionnel
 
 - Vous constatez qu'il est possible de changer de mot de passe sans devoir saisir la valeur de l'ancien mot de passe.
-- Vous allez utiliser cette fonction pour tenter une nouvelle fois de modifier le mot de passe d'un autre compte
+- Vous allez utiliser cette fonction pour tenter une nouvelle fois de modifier le mot de passe d'un autre compte => celui de l'admin
+- Vous allez utiliser une faille XSS de l'application afin de pouvoir utiliser une faille CSRF
 
 ## Phase d'attaque
 
 - Vous souhaitez prendre à nouveau le contrôle de l'administrateur de l'application, vous connaissez maintenant son email : admin@devoxx.com
-- Vous allez utiliser une faille du code pour modifier le mot de passe de l'administrateur
-- Vous allez enfin vous connecter en tant qu'administrateur
+- Vous devez tout d'abord chercher la faille XSS, dans cet exercice vous devez alterner entre la position d'attaquant et la position de l'admin de l'autre, c'est un genre de jeu de rôle
+- Une fois la faille XSS trouvée, exploitez-la pour modifier le mot de passe de l'admin via une faille CSRF
+- Vous allez enfin vous connecter en tant qu'administrateur avec le nouveau mot de passe

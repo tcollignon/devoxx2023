@@ -2,6 +2,7 @@ import { html, css, LitElement } from 'lit'
 
 import '../user/Login.js'
 import '../user/Register.js'
+import '../user/Users.js'
 import './Application.js'
 import '../user/ReinitPasswordRequest.js'
 import '../reinitPassword/ReinitPassword.js'
@@ -36,7 +37,12 @@ export class Application extends LitElement {
     const userData = new UserData()
     const queryParam = new URLSearchParams(window.location.search.substring(1))
     if (userData.isAuthenticated()) {
-      return html `<pts-login logged="true"></pts-login>`
+        if (queryParam.get('users')) {
+            return html`
+               <pts-users></pts-users>`
+        } else {
+            return html `<pts-login logged="true"></pts-login>`
+     }
     } else if (queryParam.get('register')) {
       return html`
         <pts-register></pts-register>`
@@ -46,7 +52,7 @@ export class Application extends LitElement {
     } else if (queryParam.get('reinitPassword')) {
         return html`
          <pts-reinitpassword></pts-reinitpassword>`
-    }
+    } 
       return html`<pts-login></pts-login>`
   }
 }
