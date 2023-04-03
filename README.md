@@ -134,3 +134,34 @@ fetch("http://localhost:8081/users/myprofile", {
 ## Phase de défense
 
 - Maintenant que vous avez trouvé une faille dans cette application, il est temps de la corriger ! C'est tout de même vous qui maintenez cette application !
+
+### Solution
+
+- Le mieux ici pour éviter les failles CSRF c'est déjà d'éviter les failles XSS, car CSRF peut être protégée via https://quarkus.io/guides/security-csrf-prevention, mais tant qu'il y a une XSS possible ça ne protegera pas des CSRF.
+- Il faut donc trouver le moyen d'enlever la faille XSS par plusieurs moyens : 
+  - Ne pas utiliser le  {user.desc.raw} dans le template quarkus, mais plutôt {user.desc} qui n'utilisera que le texte et non le code html, c'est moins permissif et donc plus sécurisé
+  - Si l'on utilise LIT-HTML par exemple pour afficher cela il est trés sécurisé contre les failles XSS par défaut, donc il trés difficile de lui faire exécuter du code javascript, c'est encore mieux qu'utiliser un template Quarkus
+  - Si l'on ne veut pas utiliser les 2 précédentes alors il faut "nettoyer" l'input client avant de l'afficher à l'écran, par exemple via la librairie https://owasp.org/www-project-java-html-sanitizer/
+
+```
+<dependency>
+    <groupId>com.googlecode.owasp-java-html-sanitizer</groupId>
+    <artifactId>owasp-java-html-sanitizer</artifactId>
+    <version>20180219.1</version>
+</dependency>
+
+
+@GET
+@Produces(MediaType.TEXT_HTML)
+@Consumes(MediaType.TEXT_HTML)
+@Path("listUsers")
+@RolesAllowed({"admin", "config"})
+public TemplateInstance usersTemplate() {
+    List<User> usersList = User.findAll().list();
+    PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
+    for (User user : usersList) {
+        user.desc = policy.sanitize(user.desc);
+    }
+    return users.data("users", usersList);
+}
+```
