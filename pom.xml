@@ -19,7 +19,7 @@
         <surefire-plugin.version>3.0.0-M7</surefire-plugin.version>
         <assertJ.version>3.23.1</assertJ.version>
         <quinoa.version>1.2.5</quinoa.version>
-        <commons.text.version>1.10.0</commons.text.version>
+        <commons.text.version>1.9</commons.text.version>
         <commons.jexl.version>3.0</commons.jexl.version>
     </properties>
     <dependencyManagement>
