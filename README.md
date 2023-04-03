@@ -250,3 +250,20 @@ En effet, avec le contenu, vous allez pouvoir obtenir un accès direct à la bas
 - Vous devez commencer par trouver un service WEB d'administration qui permet de monitorer le process de l'application
 - En détournant ce process vous devez arriver à faire exécuter une commande au serveur permettant d'afficher le contenu du fichier de configuration de l'application
 - Le service doit enfin vous retourner le contenu de ce fichier
+
+### Solution
+
+- Vous vous connectez en tant que admin@devoxx.com
+- Vous testez la fameuse URL "/admin" et vous vous rendez compte quelle renvoi la liste des commandes java du serveur
+- Vous voyez qu'en fin de page on vous indique comment monitorer le process de votre choix
+- Vous testez donc l'URL "/admin/procPerf?pid=XXX" en choisissant un pid dans la liste proposée, et vous avez accès à la trace jcmd de PerfCounter.print
+- Vous constatez donc ici qu'on passe un paramètre et que celui-ci est concatené à la commande executée par le serveur
+- Vous aller donc vous servir de ce point d'injection pour lancer la commande qui vous interesse
+- Il faut donc que vous passiez la bonne commande avec un PID qui existe pour trouver le fichier de configuration, vous devez donc savoir dans quel dossier vous êtes actuellement (en n'oubliant pas les url encode) : http://localhost:8081/admin/procPerf?pid=XXX%26%26cd%26%26REM
+    - Vous constatez que vous vous trouvez vraisemblablement dans le dossier courant du serveur
+    - Vous exécutez donc la commande permettant d'afficher le fichier de configuration dans son répertoire classique (en n'oubliant pas les url encode) : http://localhost:8081/admin/procPerf?pid=XXX%26%26type%20src%5Cmain%5Cresources%5Capplication.properties%26%26REM
+    - et vous récupérez le contenu du fameux fichier !
+
+## Phase de défense
+
+- Maintenant que vous avez trouvé une faille dans cette application, il est temps de la corriger ! C'est tout de même vous qui maintenez cette application !
