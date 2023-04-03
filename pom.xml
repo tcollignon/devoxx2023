@@ -19,7 +19,7 @@
         <surefire-plugin.version>3.0.0-M7</surefire-plugin.version>
         <assertJ.version>3.23.1</assertJ.version>
         <quinoa.version>1.2.5</quinoa.version>
-        <commons.text.version>1.9</commons.text.version>
+        <commons.text.version>1.10.0</commons.text.version>
         <commons.jexl.version>3.0</commons.jexl.version>
     </properties>
     <dependencyManagement>
@@ -44,19 +44,19 @@
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-resteasy-reactive</artifactId>
+            <artifactId>quarkus-resteasy</artifactId>
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-resteasy-reactive-jackson</artifactId>
+            <artifactId>quarkus-resteasy-jackson</artifactId>
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-rest-client-reactive-jackson</artifactId>
+            <artifactId>quarkus-rest-client-jackson</artifactId>
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-resteasy-reactive-qute</artifactId>
+            <artifactId>quarkus-resteasy-qute</artifactId>
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>

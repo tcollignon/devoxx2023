@@ -79,123 +79,19 @@ quarkus.hibernate-orm.database.generation=update
 
 # Cas 02 : Modification de mot de passe dans sa page de profil
 
-- Rendez-vous sur la page principale de cette application, puis identifiez-vous avec votre compte personnel (on considère ici qu'on ne connait plus le mot de passe du compte admin, la faille a été corrigée :) )
-- Vous devriez ensuite avoir une page qui vous permet de modifier vos données personnelles : notamment pseudo et mot de passe
-- Faites un essai, vous pouvez normalement modifier ces 2 informations sans problème (le mot de passe doit être de 6 caractères minimum, et il est obligatoire de saisir une valeur pour valider le formulaire)
+- Rendez-vous sur la page principale de cette application, puis identifiez-vous avec votre compte personnel
+- Vous devriez ensuite avoir une page qui vous permet de modifier vos données personnelles : pseudo, mot de passe et description
+- Faites un essai, vous pouvez normalement modifier ces informations sans problème (le mot de passe doit être de 6 caractères minimum, et il est obligatoire de saisir une valeur pour valider le formulaire)
 
 ## Description du cas fonctionnel
 
 - Vous constatez qu'il est possible de changer de mot de passe sans devoir saisir la valeur de l'ancien mot de passe.
-- Vous allez utiliser cette fonction pour tenter une nouvelle fois de modifier le mot de passe d'un autre compte
+- Vous allez utiliser cette fonction pour tenter une nouvelle fois de modifier le mot de passe d'un autre compte => celui de l'admin
+- Vous allez utiliser une faille XSS de l'application afin de pouvoir utiliser une faille CSRF
 
 ## Phase d'attaque
 
 - Vous souhaitez prendre à nouveau le contrôle de l'administrateur de l'application, vous connaissez maintenant son email : admin@devoxx.com
-- Vous allez utiliser une faille du code pour modifier le mot de passe de l'administrateur
-- Vous allez enfin vous connecter en tant qu'administrateur
-
-### Solution
-
-- Vous créez un compte d'attaque (ou bien vous utilisez celui que vous avez créé à l'exercice 1)
-- Vous vous logguez
-- Vous lancez la modification de votre mot de passe afin de voir quelle requête est lancée
-- Vous utilisez le cookie via une faille csrf pour changer le mot de passe de l'admin
-- Vous pouvez ensuite vous connecter en tant qu'administrateur
-
-## Phase de défense
-
-- Maintenant que vous avez trouvé une faille dans cette application, il est temps de la corriger ! C'est tout de même vous qui maintenez cette application !
-- _OPTIONNEL_ : Ajouter un logger de sécurité
-- Corrigez le problème
-
-### Solution
-
-- Il faut corriger le code, Cf UsersResource#updateMyProfile, il faut ajouter un test sur l'email au début de la méthode :
-
-```
-  User userAuth = User.findByEmail(securityContext.getUserPrincipal().getName());
-
-
-  if (!userAuth.email.equals(createUserFront.email)) {
-    return Response.status(403).build();
-  }
-```
-
-- Un test peut être mis en oeuvre pour cela, Cf UsersResourceTest#should_return_403_when_update_my_user_profile_with_other_person_than_me
-
-# Cas 03 : Upload image de profil
-
-On va s'intéresser ici à la fonctionnalité qui permet d'ajouter/modifier une image de profil.
-
-## Description du cas fonctionnel
-
-- Rendez-vous sur votre page de profil, puis essayez d'ajouter une image de profil.
-- Vérifiez que tout fonctionne bien.
-    - Note : il faut recharger quarkus dev pour que l'image s'affiche car on la copie dans le repertoire public image et il faut donc que la partie front soit mise à jour (on émule un genre de serveur web)
-
-## Phase d'attaque
-
-- Vous savez que le backend tourne sur Java / Quarkus (grâce au logo de la page d'accueil qui porte le nom quarkus.png)
-- Vous allez donc essayer de remplacer le fichier de configuration de quarkus (présent dans l'arborescence src/main/resources), afin d'y placer le vôtre
-- Au prochain redémarrage de l'application, c'est votre fichier qui sera chargé, et c'est la catastrophe, vous pouvez introduire ce que vous voulez
-
-### Solution
-
-- Vous analysez la requête qui part lorsque vous uploadez votre image de profil
-- Vous vous rendez compte qu'il n'y a pas de contrôle sur le type de fichier
-- Vous renvoyez donc la requête avec un fichier properties et un nom qui va remplacer l'existant : http://localhost:8081/users/uploadImage/..%2Fsrc%2Fmain%2Fresources%2Fapplication.properties
-    - Il faut sur plusieurs essais pour comprendre que le fichier est d'abord copié dans un répertoire tmp, avant d'être déplacé dans public/img, mais grâce aux erreurs qui remontent "Error from server" vous pouvez y parvenir
-
-## Phase de défense
-
-- Maintenant que vous avez trouvé une faille dans cette application, il est temps de la corriger ! C'est tout de même vous qui maintenez cette application !
-- _OPTIONNEL_ : Ajouter un logger de sécurité
-- Corrigez le problème
-
-### Solution
-
-- Afficher une indication sur la technologie du backend n'est pas une bonne idée, il ne faut laisser aucune informations sensibles visibles
-- Le code qui pose problème se trouve dans UsersResources#uploadImage
-- En effet, on peut constater plusieurs sources de failles de sécurité :
-    - On passe le nom du fichier en paramètre du service : ce nom ne sert à rien au code backend, il ne faut pas le passer pour éviter justement une faille à cause de lui
-    - On ne contrôle pas coté backend le type de fichier, ici c'est une image il faut se restreindre à cela, et jeter tout le reste
-    - On fait une copie du fichier dans le répertoire de l'application, c'est très dangereux, il faut considérer ce repertoire comme readonly depuis l'extérieur. Il faut écrire le fichier dans un espace tmp du serveur, ou bien directement sur le repertoire image publique cible
-- Une proposition de code est donc :
-
-``` 
-@POST
-@Path("uploadImage")
-@Consumes(MediaType.TEXT_PLAIN)
-public Response uploadImage(@Context SecurityContext securityContext, String image) throws IOException {
-        User userAuth = User.findByEmail(securityContext.getUserPrincipal().getName());
-        //Write file in public image folder
-        byte[] decodedBytes = Base64.getDecoder().decode(image.split(BASE_64_COMMA)[1]);
-        String mimeType = image.split(BASE_64_COMMA)[0].replace(DATA, "");
-        String extension = mimeType.split("/")[1];
-        String imgPublicDir = "src/main/webui/public/img/profil";
-        String imageFinalName = userAuth.nickname + "_" + System.currentTimeMillis() + "." + extension;
-        Files.write(Paths.get(imgPublicDir + "/" + imageFinalName), decodedBytes);
-
-        //Then, we update user
-        User userModified = service.updateProfilImage(userAuth, imageFinalName);
-
-        return Response.status(200).entity(UserFrontMapper.map(userModified)).build();
-    }
-``` 
-
-# Cas 04 : Affichage d'un fichier sensible
-
-Le but ici va être d'afficher le fichier de configuration de l'application Quarkus que vous avez pu mettre à jour juste avant.
-En effet, avec le contenu, vous allez pouvoir obtenir un accès direct à la base de données par exemple.
-
-## Description du cas fonctionnel
-
-- Vous connaissez désormais le mot de passe d'un compte admin, vous pouvez donc exécuter des services de niveau admin.
-- Vous allez utiliser cela pour afficher le contenu du fichier de configuration de l'application.
-- Pour cela il vous faut utiliser une faille SSRF, afin de faire exécuter au serveur une commande permettant de lire le fichier en question.
-
-## Phase d'attaque
-
-- Vous devez commencer par trouver un service WEB d'administration qui permet de monitorer le process de l'application
-- En détournant ce process vous devez arriver à faire exécuter une commande au serveur permettant d'afficher le contenu du fichier de configuration de l'application
-- Le service doit enfin vous retourner le contenu de ce fichier
+- Vous devez tout d'abord chercher la faille XSS, dans cet exercice vous devez alterner entre la position d'attaquant et la position de l'admin de l'autre, c'est un genre de jeu de rôle
+- Une fois la faille XSS trouvée, exploitez-la pour modifier le mot de passe de l'admin via une faille CSRF
+- Vous allez enfin vous connecter en tant qu'administrateur avec le nouveau mot de passe
