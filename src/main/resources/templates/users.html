@@ -1,0 +1,96 @@
+<html>
+<head>
+    <title>Devoxx 2023 HOL</title>
+
+    <link rel="stylesheet" href="../devoxx.css" />
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <style>
+        :host {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100vw;
+            height: 100vh;
+            background: radial-gradient(circle at top left, rgba(54,47,184,1) 0%, rgba(0,212,255,0.5) 100%), radial-gradient(circle at bottom right, rgba(19,142,35,1) 0%, rgba(0,255,188,1) 100%);
+            font-family: var(--font);
+        }
+
+        .container {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: var(--color-3);
+            gap: 2rem;
+            border-radius: 0.6rem;
+            padding: 4rem 2rem;
+            box-shadow: rgba(0, 0, 0, 0.25) 0px 2px 8px;
+        }
+        
+
+        div.boutons {
+            display: flex;
+            gap: 6px;
+            width: 100%;
+        }
+
+        div.boutons > :is(button, a.register),
+        a.passwordForgot {
+            cursor: pointer;
+            font-size: 14px;
+            font-family: var(--font);
+            border-radius: 0.6rem;
+            padding: 0.6rem 1rem;
+            flex: 1;
+            border: 2px solid var(--bouton-border-color, transparent);
+            background: var(--bouton-background);
+            color: var(--bouton-color);
+            transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+        }
+
+        div.boutons > button {
+            --bouton-border-color: var(--color-5);
+            --bouton-background: var(--color-5);
+            --bouton-color: var(--color-3);
+        }
+
+        div.boutons > button:is(:focus-visible, :hover) {
+            --bouton-border-color: #003dd7;
+            --bouton-background: #003dd7;
+
+            outline: none;
+        }
+
+        div.boutons > a.register {
+            --bouton-border-color: var(--color-5);
+            --bouton-background: var(--color-3);
+            --bouton-color: var(--color-5);
+
+            text-align: center;
+            text-decoration: none;
+        }
+
+        div.boutons > a.register:is(:focus-visible, :hover) {
+            --bouton-border-color: #d0ddff;
+            --bouton-background: #d0ddff;
+
+            outline: none;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>Liste des utilisateurs de l'application Devoxx</h2>
+    {#for user in users}
+        <span>{user.nickname ?: 'Unknown'} ({user.email})</span>
+        {user.desc.raw}
+        <br><br>
+    {/for}
+    <div class="boutons">
+        <button onclick="window.location.replace('/')">Accueil</button>
+    </div>
+</div>
+
+</body>
+</html>
