@@ -169,7 +169,6 @@ export class Login extends LitElement {
 
   constructor () {
     super()
-
     this._message = ''
 
     const queryParam = new URLSearchParams(window.location.search.substring(1))
@@ -435,6 +434,18 @@ export class Login extends LitElement {
           `
       }
   }
+
+  displayUsers() {
+    window.location.replace('/users/listUsers')
+  }
+  
+  displayUsersButtonIfAdmin() {
+      const userData = new UserData()
+      if (userData.isAdmin()) {
+          return html `<button @click="${this.displayUsers}">Voir les utilisateurs</button>`
+      }
+      return html ``
+  }
   
   displayLogged() {
       if (this.logged) {
@@ -463,6 +474,7 @@ export class Login extends LitElement {
               </section>
               <div class="boutons">
                   <button @click="${this.updateInformations}">Valider</button>
+                  ${this.displayUsersButtonIfAdmin()}
               </div>
           `
       }
