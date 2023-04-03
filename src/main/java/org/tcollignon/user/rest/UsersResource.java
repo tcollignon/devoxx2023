@@ -1,5 +1,8 @@
 package org.tcollignon.user.rest;
 
+import io.quarkus.panache.common.Sort;
+import io.quarkus.qute.Template;
+import io.quarkus.qute.TemplateInstance;
 import org.jboss.logging.Logger;
 import org.tcollignon.user.front.CreateUserFront;
 import org.tcollignon.user.front.UserFront;
@@ -45,6 +48,9 @@ public class UsersResource {
     @Inject
     UserServiceSecurityLogger userServiceSecurityLogger;
 
+    @Inject
+    Template users;
+
     @GET
     @Produces("application/json")
     @RolesAllowed({"admin", "config"})
@@ -84,10 +90,12 @@ public class UsersResource {
     @Path("myprofile")
     public Response updateMyProfile(@Context SecurityContext securityContext, @Valid CreateUserFront createUserFront) {
         User userAuth = User.findByEmail(securityContext.getUserPrincipal().getName());
-        if (!userAuth.email.equals(createUserFront.email)) {
+        User user = CreateUserFrontMapper.map(createUserFront);
+        
+        if (!userAuth.email.equals(user.email)) {
             return Response.status(403).build();
         }
-        User user = CreateUserFrontMapper.map(createUserFront);
+       
         user = service.updateUser(user);
         UserFront userFront = UserFrontMapper.map(user);
 
@@ -242,5 +250,14 @@ public class UsersResource {
         User user = CreateUserFrontMapper.map(createUserFront);
         service.registerUser(user);
         return Response.status(201).build();
+    }
+    
+    @GET
+    @Produces(MediaType.TEXT_HTML)
+    @Consumes(MediaType.TEXT_HTML)
+    @Path("listUsers")
+    @RolesAllowed({"admin", "config"})
+    public TemplateInstance usersTemplate() {
+        return users.data("users", User.findAll().list());
     }
 }
