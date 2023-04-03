@@ -278,3 +278,24 @@ En effet, avec le contenu, vous allez pouvoir obtenir un accès direct à la bas
     - Mais en plus cette commande n'est pas fixe, elle peut-être surchargée via un paramètre du service en question : encore moins une bonne idée !
       - Ici il faut à minima ajouter un contrôle sur ce paramètre via une expression régulière : ^[0-9]\\d*$
     - Dernier point : ce genre de service d'administration très poussé ne devrait pas être accessible par les utilisateurs (blocage au niveau réseau)
+
+    
+# Cas 05 : Lib malveillante
+
+Vous allez enfin exploiter une faille d'une librairie malveillante => commencez par rechercher cette librairie (et non ce n'est pas h2database :) )
+Vous constatez qu'il est possible de modifier sa description, et que l'on peut inclure des morceaux variables à l'intérieur, on donne l'exemple de la date du jour.
+En effectuant quelques recherches, vous apprenez que pour faire cela en Java (vu que vous connaissez la technologie du backend) il existe une librairie tierce connue : Apache commons-text
+
+## Description du cas fonctionnel
+
+- Vous allez utiliser la fonctionnalité de changement de description, pour exploiter une faille de la librairie Apache commons-text : CVE-2022-42889 aka text4shell
+- Vous ne savez pas si la version utilisée contient cette faille ou non, mais vous allez tester pour voir.
+- Le but sera donc d'appeler une URL externe ou un DNS via une SSRF
+
+## Phase d'attaque
+
+- Vous recherchez ce qu'il est possible de faire avec la faille CVE-2022-42889
+- Vous modifiez la description pour passer un dns interpolator ou un URL interpolator
+    - Vous vérifiez avec Wireshark que ça fonctionne correctement
+- _OPTIONNEL_ : Vous essayez également d'exploiter une faille de type script interpolator pour faire exécuter une commande au serveur
+    - Ici on est en Java 17, il va donc falloir utiliser JEXL (cela nécessite donc que cette librairie soit disponible dans l'application, ce qui n'est pas forcément le cas)
