@@ -1,9 +1,10 @@
 package org.tcollignon.user.rest;
 
-import io.quarkus.panache.common.Sort;
 import io.quarkus.qute.Template;
 import io.quarkus.qute.TemplateInstance;
 import org.jboss.logging.Logger;
+import org.owasp.html.PolicyFactory;
+import org.owasp.html.Sanitizers;
 import org.tcollignon.user.front.CreateUserFront;
 import org.tcollignon.user.front.UserFront;
 import org.tcollignon.user.front.UserFrontLight;
@@ -44,7 +45,7 @@ public class UsersResource {
 
     @Inject
     UserService service;
-    
+
     @Inject
     UserServiceSecurityLogger userServiceSecurityLogger;
 
@@ -91,11 +92,11 @@ public class UsersResource {
     public Response updateMyProfile(@Context SecurityContext securityContext, @Valid CreateUserFront createUserFront) {
         User userAuth = User.findByEmail(securityContext.getUserPrincipal().getName());
         User user = CreateUserFrontMapper.map(createUserFront);
-        
+
         if (!userAuth.email.equals(user.email)) {
             return Response.status(403).build();
         }
-       
+
         user = service.updateUser(user);
         UserFront userFront = UserFrontMapper.map(user);
 
@@ -251,13 +252,18 @@ public class UsersResource {
         service.registerUser(user);
         return Response.status(201).build();
     }
-    
+
     @GET
     @Produces(MediaType.TEXT_HTML)
     @Consumes(MediaType.TEXT_HTML)
     @Path("listUsers")
     @RolesAllowed({"admin", "config"})
     public TemplateInstance usersTemplate() {
-        return users.data("users", User.findAll().list());
+        List<User> usersList = User.findAll().list();
+        PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
+        for (User user : usersList) {
+            user.desc = policy.sanitize(user.desc);
+        }
+        return users.data("users", usersList);
     }
 }
