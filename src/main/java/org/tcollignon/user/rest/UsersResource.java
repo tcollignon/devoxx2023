@@ -131,6 +131,9 @@ public class UsersResource {
         String mimeType = image.split(BASE_64_COMMA)[0].replace(DATA, "");
         String extension = mimeType.split("/")[1];
         String imgPublicDir = "src/main/webui/public/img/profil";
+        if (!Files.exists(Paths.get("src/main/webui/public/img/profil"))) {
+            Files.createDirectory(Paths.get("src/main/webui/public/img/profil"));
+        }
         String imageFinalName = userAuth.nickname + "_" + System.currentTimeMillis() + "." + extension;
         Files.move(Paths.get("tmp/" + imageName), Paths.get(imgPublicDir + "/" + imageFinalName));
 
