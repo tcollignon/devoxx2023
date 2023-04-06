@@ -93,7 +93,9 @@ quarkus.hibernate-orm.database.generation=update
 
 - Vous souhaitez prendre à nouveau le contrôle de l'administrateur de l'application, vous connaissez maintenant son email : admin@devoxx.com
 - Vous devez tout d'abord chercher la faille XSS, dans cet exercice vous devez alterner entre la position d'attaquant et la position de l'admin de l'autre, c'est un genre de jeu de rôle
+  - Indice : l'administrateur possède une page lui permettant de voir la liste de tous les utilisateurs. Vous pouvez la tester en vous mettant dans le rôle de l'admin, en vous connectant, puis en utilisant le bouton "Voir les utilisateurs"
 - Une fois la faille XSS trouvée, exploitez-la pour modifier le mot de passe de l'admin via une faille CSRF
+  - Pour alterner entre utilisateur qui tente de hacker, et administrateur qui va consulter sa page "Voir les utilisateurs", vous pouvez utiliser une session de navigation privée avec l'admin et la session standard avec l'utilisateur
 - Vous allez enfin vous connecter en tant qu'administrateur avec le nouveau mot de passe
 
 ### Solution
