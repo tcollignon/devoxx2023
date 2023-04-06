@@ -115,9 +115,9 @@ public class UsersResource {
     }
 
     @POST
-    @Path("uploadImage/{name}")
+    @Path("uploadImage")
     @Consumes(MediaType.TEXT_PLAIN)
-    public Response uploadImage(@Context SecurityContext securityContext, String image, @PathParam("name") String imageName) throws IOException {
+    public Response uploadImage(@Context SecurityContext securityContext, String image, @QueryParam("name") String imageName) throws IOException {
         User userAuth = User.findByEmail(securityContext.getUserPrincipal().getName());
 
         //First we store file in tmp dir
