@@ -308,9 +308,9 @@ export class Login extends LitElement {
         let userInfos = new User()
         userInfos.email = userData.getUserName() 
         userInfos.nickname =  this.shadowRoot.getElementById('champLoginLoggue').value
-        userInfos.password =  this.shadowRoot.getElementById('champMotDePasseLoggue').value
+        userInfos.password =  this.shadowRoot.getElementById('champMotDePasseLoggue').value ? this.shadowRoot.getElementById('champMotDePasseLoggue').value : null
         userInfos.desc =  this.shadowRoot.getElementById('champDescLoggue').value
-        if (userInfos.nickname && userInfos.password && userInfos.password.length >= 6) {
+        if (userInfos.nickname) {
             fetch('/users/myprofile', {
                 method: 'POST',
                 headers: {
