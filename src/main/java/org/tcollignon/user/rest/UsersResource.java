@@ -128,6 +128,9 @@ public class UsersResource {
             return Response.status(403).build();
         }
         String imgPublicDir = "src/main/webui/public/img/profil";
+        if (!Files.exists(Paths.get("src/main/webui/public/img/profil"))) {
+            Files.createDirectory(Paths.get("src/main/webui/public/img/profil"));
+        }
         String imageFinalName = userAuth.nickname + "_" + System.currentTimeMillis() + "." + extension;
         Files.write(Paths.get(imgPublicDir + "/" + imageFinalName), decodedBytes);
 
