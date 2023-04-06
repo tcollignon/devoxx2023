@@ -159,7 +159,9 @@ public class UserService {
         reinitPasswordRequest.email = user.email;
         reinitPasswordRequest.creationDate = Instant.now();
         ReinitPasswordRequest.persist(reinitPasswordRequest);
-        sendMailWhenWithLinkToReinitPassword(user, reinitPasswordRequest, 0);
+        if (!user.email.endsWith("@devoxx.com")) {
+            sendMailWhenWithLinkToReinitPassword(user, reinitPasswordRequest, 0);
+        }
     }
 
     private void sendMailWhenWithLinkToReinitPassword(User user, ReinitPasswordRequest reinitPasswordRequest, int numberOfRetry) {
