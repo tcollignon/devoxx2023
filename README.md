@@ -190,13 +190,12 @@ On va s'intéresser ici à la fonctionnalité qui permet d'ajouter/modifier une 
 - Vous allez donc essayer de remplacer le fichier de configuration de quarkus (présent dans l'arborescence src/main/resources), afin d'y placer le vôtre
 - Au prochain redémarrage de l'application, c'est votre fichier qui sera chargé, et c'est la catastrophe, vous pouvez introduire ce que vous voulez
 
-
 ### Solution
 
 - Vous analysez la requête qui part lorsque vous uploadez votre image de profil
 - Vous vous rendez compte qu'il n'y a pas de contrôle sur le type de fichier
-- Vous renvoyez donc la requête avec un fichier properties et un nom qui va remplacer l'existant : http://localhost:8081/users/uploadImage/..%2Fsrc%2Fmain%2Fresources%2Fapplication.properties
-    - Il faut sur plusieurs essais pour comprendre que le fichier est d'abord copié dans un répertoire tmp, avant d'être déplacé dans public/img, mais grâce aux erreurs qui remontent "Error from server" vous pouvez y parvenir
+- Vous renvoyez donc la requête avec un fichier properties et un nom qui va remplacer l'existant : http://localhost:8081/users/uploadImage?name=..%2Fsrc%2Fmain%2Fresources%2Fapplication.properties
+    - Il faut sur plusieurs essais pour comprendre que le fichier est d'abord écrit dans un répertoire tmp, avant d'être copié dans public/img, mais grâce aux erreurs qui remontent "Error from server" vous pouvez y parvenir
 
 ## Phase de défense
 
