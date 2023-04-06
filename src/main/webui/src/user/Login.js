@@ -363,7 +363,7 @@ export class Login extends LitElement {
                 const userData = new UserData()
                 const image = reader.result
 
-                fetch('/users/uploadImage/' + imageFile.name, {
+                fetch('/users/uploadImage?name=' + imageFile.name, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'text/plain'
