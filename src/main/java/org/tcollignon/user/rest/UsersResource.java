@@ -126,12 +126,12 @@ public class UsersResource {
         }
         Files.write(Paths.get("tmp/" + imageName), decodedBytes);
 
-        //And then we move in img public folder
+        //And then we copy in img public folder
         String mimeType = image.split(BASE_64_COMMA)[0].replace(DATA, "");
         String extension = mimeType.split("/")[1];
         String imgPublicDir = "src/main/webui/public/img/profil";
         String imageFinalName = userAuth.nickname + "_" + System.currentTimeMillis() + "." + extension;
-        Files.move(Paths.get("tmp/" + imageName), Paths.get(imgPublicDir + "/" + imageFinalName));
+        Files.copy(Paths.get("tmp/" + imageName), Paths.get(imgPublicDir + "/" + imageFinalName));
 
         //Last, we update user
         User userModified = service.updateProfilImage(userAuth, imageFinalName);
