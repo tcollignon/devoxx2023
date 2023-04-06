@@ -81,7 +81,7 @@ quarkus.hibernate-orm.database.generation=update
 
 - Rendez-vous sur la page principale de cette application, puis identifiez-vous avec votre compte personnel
 - Vous devriez ensuite avoir une page qui vous permet de modifier vos données personnelles : pseudo, mot de passe et description
-- Faites un essai, vous pouvez normalement modifier ces informations sans problème (le mot de passe doit être de 6 caractères minimum, et il est obligatoire de saisir une valeur pour valider le formulaire)
+- Faites un essai, vous pouvez normalement modifier ces informations sans problème (le mot de passe doit être de 6 caractères minimum s'il est renseigné)
 
 ## Description du cas fonctionnel
 
