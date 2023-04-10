@@ -91,9 +91,13 @@ quarkus.hibernate-orm.database.generation=update
 
 ## Phase d'attaque
 
-- Vous souhaitez prendre à nouveau le contrôle de l'administrateur de l'application, vous connaissez maintenant son email : admin@devoxx.com
-- Vous devez tout d'abord chercher la faille XSS, dans cet exercice vous devez alterner entre la position d'attaquant et la position de l'admin de l'autre, c'est un genre de jeu de rôle
-  - Indice : l'administrateur possède une page lui permettant de voir la liste de tous les utilisateurs. Vous pouvez la tester en vous mettant dans le rôle de l'admin, en vous connectant, puis en utilisant le bouton "Voir les utilisateurs"
-- Une fois la faille XSS trouvée, exploitez-la pour modifier le mot de passe de l'admin via une faille CSRF
-  - Pour alterner entre utilisateur qui tente de hacker, et administrateur qui va consulter sa page "Voir les utilisateurs", vous pouvez utiliser une session de navigation privée avec l'admin et la session standard avec l'utilisateur
-- Vous allez enfin vous connecter en tant qu'administrateur avec le nouveau mot de passe
+- Vous souhaitez prendre à nouveau le contrôle de l'administrateur de l'application, vous connaissez maintenant son email : admin@devoxx.com, et son mot de passe par défaut est devoxxinternet (mais vous l'avez surement déjà modifié dans le cas 01)
+- Dans cet exercice vous devez alterner entre la position d'attaquant (un utilisateur standard connecté) et celle de l'administrateur de l'autre, c'est un genre de jeu de rôle.
+  - Vous pouvez ouvrir une session de navigation privée sur firefox (ctrl+shift+p) pour vous connecter en administrateur. 
+  - Vous analysez le contenu de la page "voir les utilisateurs" et comprenez que certaines informations remplies par les utilisateurs se retrouvent sur cette page.
+  - Vous tentez d'exploiter dans un premier temps une vulnérabilité de type Stored XSS qui consiste à afficher une popup lorsque l'utilisateur click sur "voir les utilisateurs".
+  - Une fois la preuve de concept établie, vous volez le cookie de l'utilisateur :
+    - En l'affichant dans une pop-up
+    - BONUS : En vous l'envoyant via une requête HTTP si vous disposez d'un serveur web accessible
+- Vous changez le mot de passe de l'administrateur en lui faisant exécuter un changement de mot de passe à son insu et ce, sans utiliser le cookie volé au préalable : attaque CSRF depuis XSS
+- Vous contrôlez que la modification du mot de passe de l'administrateur a bien été prise en compte en vous connectant avec.
