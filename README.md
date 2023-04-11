@@ -256,7 +256,7 @@ En effet, avec le contenu, vous allez pouvoir obtenir un accès direct à la bas
 
 - Vous connaissez désormais le mot de passe d'un compte admin, vous pouvez donc exécuter des services de niveau admin.
 - Vous allez utiliser cela pour afficher le contenu du fichier de configuration de l'application.
-- Pour cela il vous faut utiliser une faille SSRF, afin de faire exécuter au serveur une commande permettant de lire le fichier en question.
+- Pour cela il vous faut utiliser une faille de type command injection, afin de faire exécuter au serveur une commande permettant de lire le fichier en question.
 
 ## Phase d'attaque
 
@@ -309,6 +309,6 @@ En effectuant quelques recherches, vous apprenez que pour faire cela en Java (vu
 
 - Vous recherchez ce qu'il est possible de faire avec la faille CVE-2022-42889
 - Vous modifiez la description pour passer un dns interpolator ou un URL interpolator
-    - Vous vérifiez avec Wireshark que ça fonctionne correctement
+    - Vérifiez que la commande passée en description a bien été interpolée
 - _OPTIONNEL_ : Vous essayez également d'exploiter une faille de type script interpolator pour faire exécuter une commande au serveur
     - Ici on est en Java 17, il va donc falloir utiliser JEXL (cela nécessite donc que cette librairie soit disponible dans l'application, ce qui n'est pas forcément le cas)
