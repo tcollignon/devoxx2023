@@ -22,8 +22,8 @@ quarkus.hibernate-orm.database.generation=update
 ## Description du cas fonctionnel
 
 - Vous allez utiliser la fonction "J'ai oublié mon mot de passe", qui va vous demander votre email, puis va vous envoyer un email avec un lien spécifique.
-- Ici, nous utilisons un mock pour le mail, donc le contenu du mail va apparaitre dans votre console (vous pouvez le copier/coller dans un fichier html puis l'ouvrir avec votre navigateur)
-- Lancer la réinitialisation du mot de passe par un nouveau
+- Ici, nous utilisons un mock pour le mail, donc le contenu du mail va apparaitre dans la console de votre IDE (vous pouvez le copier/coller dans un fichier html puis l'ouvrir avec votre navigateur)
+- Lancer la réinitialisation du mot de passe et modifiez le
 - Vérifiez que le nouveau mot de passe fonctionne bien (et que l'ancien ne fonctionne plus)
 
 ## Phase d'attaque
