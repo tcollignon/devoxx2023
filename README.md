@@ -256,7 +256,7 @@ En effet, avec le contenu, vous allez pouvoir obtenir un accès direct à la bas
 
 - Vous connaissez désormais le mot de passe d'un compte admin, vous pouvez donc exécuter des services de niveau admin.
 - Vous allez utiliser cela pour afficher le contenu du fichier de configuration de l'application.
-- Pour cela il vous faut utiliser une faille SSRF, afin de faire exécuter au serveur une commande permettant de lire le fichier en question.
+- Pour cela il vous faut utiliser une faille de type command injection, afin de faire exécuter au serveur une commande permettant de lire le fichier en question.
 
 ## Phase d'attaque
 
