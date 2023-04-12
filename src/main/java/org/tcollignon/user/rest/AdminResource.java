@@ -33,9 +33,14 @@ public class AdminResource {
     }
 
     private AtomicReference<String> runCommand(String command) throws IOException, InterruptedException, ExecutionException, TimeoutException {
+        boolean isWindows = System.getProperty("os.name").toLowerCase().startsWith("windows");
         ProcessBuilder builder = new ProcessBuilder();
         builder.directory(new File("."));
-        builder.command("cmd.exe", "/c", command);
+        if (isWindows) {
+            builder.command("cmd.exe", "/c", command);
+        } else {
+            builder.command("/bin/sh", "-c", command);
+        }
         Process process = builder.start();
         AtomicReference<String> result = new AtomicReference<>("");
         result.set("Command : " + command);
