@@ -1,6 +1,8 @@
 # Devoxx 2023
 _HOL : Hacker son application JAVA pour mieux la sécuriser ensuite_
 
+Slides : [lien vers la présentation](https://www.canva.com/design/DAFcIbKCXek/yKW3d5LBIQomt4jhfQRAnA/view?utm_content=DAFcIbKCXek&utm_campaign=designshare&utm_medium=link&utm_source=publishsharelink)
+
 # Pré-requis
 - Avoir JAVA 17 installé sur votre machine : https://jdk.java.net/archive/ ou https://adoptium.net/temurin/releases/
 - Avoir Maven installé sur votre machine : https://maven.apache.org/download.cgi, puis https://maven.apache.org/install.html
